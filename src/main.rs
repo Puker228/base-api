@@ -1,4 +1,4 @@
-use axum::{Json, Router, routing::get};
+use axum::{Json, Router, routing::get, routing::post};
 use serde::Serialize;
 use tower_http::trace::TraceLayer;
 use tracing::info;
@@ -10,14 +10,14 @@ struct MessageResponse {
 }
 
 async fn hello() -> Json<MessageResponse> {
-    info!("GET /hello");
+    info!("POST /hello");
     Json(MessageResponse {
         message: "привет"
     })
 }
 
 async fn bye() -> Json<MessageResponse> {
-    info!("GET /bye");
+    info!("POST /bye");
     Json(MessageResponse {
         message: "пока"
     })
@@ -31,8 +31,8 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
-        .route("/hello", get(hello))
-        .route("/bye", get(bye))
+        .route("/hello", post(hello))
+        .route("/bye", post(bye))
         .layer(TraceLayer::new_for_http());
 
     info!("listening on 0.0.0.0:3000");
