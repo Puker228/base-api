@@ -1,11 +1,30 @@
-use axum::{Router, routing::get};
+use axum::{Json, Router, routing::get};
+use serde::Serialize;
+
+#[derive(Serialize)]
+struct MessageResponse {
+    message: &'static str,
+}
+
+async fn hello() -> Json<MessageResponse> {
+    Json(MessageResponse {
+        message: "привет"
+    })
+}
+
+async fn bye() -> Json<MessageResponse> {
+    Json(MessageResponse {
+        message: "пока"
+    })
+}
 
 #[tokio::main]
 async fn main() {
-    // build our application with a single route
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app = Router::new()
+        .route("/", get(|| async { "Hello, World!" }))
+        .route("/hello", get(hello))
+        .route("/bye", get(bye));
 
-    // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
